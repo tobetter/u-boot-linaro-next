@@ -115,6 +115,41 @@ static int exynos4_mmc_config(int peripheral, int flags)
 	return 0;
 }
 
+#if defined(CONFIG_EXYNOS4)
+static int exynos4_mmc4_config(int peripheral, int flags)
+{
+	struct exynos4_gpio_part2 *gpio2 =
+		(struct exynos4_gpio_part2 *) samsung_get_base_gpio_part2();
+	struct s5p_gpio_bank *bank;
+	int i;
+
+	bank = &gpio2->k1;
+
+	if (flags & PINMUX_FLAG_8BIT_MODE) {
+		for (i = 3; i <= 6; i++) {
+			s5p_gpio_cfg_pin_3bit(bank, i, GPIO_FUNC(4));
+			s5p_gpio_set_pull(bank, i, GPIO_PULL_UP);
+			s5p_gpio_set_drv(bank, i, GPIO_DRV_4X);
+		}
+	}
+
+	bank = &gpio2->k0;
+
+	for (i = 0; i < 2; i++) {
+		s5p_gpio_cfg_pin(bank, i, GPIO_FUNC(0x3));
+		s5p_gpio_set_pull(bank, i, GPIO_PULL_NONE);
+		s5p_gpio_set_drv(bank, i, GPIO_DRV_4X);
+	}
+	for (i = 3; i <= 6; i++) {
+		s5p_gpio_cfg_pin(bank, i, GPIO_FUNC(0x3));
+		s5p_gpio_set_pull(bank, i, GPIO_PULL_UP);
+		s5p_gpio_set_drv(bank, i, GPIO_DRV_4X);
+	}
+
+	return 0;
+}
+#endif
+
 static void exynos4_sromc_config(int flags)
 {
 	struct exynos4_gpio_part2 *gpio2 =
@@ -244,6 +279,10 @@ static int exynos4_pinmux_config(int peripheral, int flags)
 	case PERIPH_ID_SDMMC2:
 	case PERIPH_ID_SDMMC3:
 		return exynos4_mmc_config(peripheral, flags);
+#if defined(CONFIG_EXYNOS4)
+	case PERIPH_ID_SDMMC4:
+		return exynos4_mmc4_config(peripheral, flags);
+#endif
 	case PERIPH_ID_SROMC:
 		exynos4_sromc_config(flags);
 		break;
