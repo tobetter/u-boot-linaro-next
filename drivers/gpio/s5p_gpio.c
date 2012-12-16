@@ -25,6 +25,9 @@
 #define CON_MASK(x)		(0xf << ((x) << 2))
 #define CON_SFR(x, v)		((v) << ((x) << 2))
 
+#define CON_MASK3(x)		(0x7 << ((x) << 3))
+#define CON_SFR3(x, v)		((v) << ((x) << 3))
+
 #define DAT_MASK(x)		(0x1 << (x))
 #define DAT_SET(x)		(0x1 << (x))
 
@@ -43,6 +46,16 @@ void s5p_gpio_cfg_pin(struct s5p_gpio_bank *bank, int gpio, int cfg)
 	value = readl(&bank->con);
 	value &= ~CON_MASK(gpio);
 	value |= CON_SFR(gpio, cfg);
+	writel(value, &bank->con);
+}
+
+void s5p_gpio_cfg_pin_3bit(struct s5p_gpio_bank *bank, int gpio, int cfg)
+{
+	unsigned int value;
+
+	value = readl(&bank->con);
+	value &= ~CON_MASK3(gpio);
+	value |= CON_SFR3(gpio, cfg);
 	writel(value, &bank->con);
 }
 
