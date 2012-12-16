@@ -89,8 +89,20 @@ void dram_init_banksize(void)
 #ifdef CONFIG_GENERIC_MMC
 int board_mmc_init(bd_t *bis)
 {
+	struct exynos4_gpio_part2 *gpio =
+		(struct exynos4_gpio_part2 *)samsung_get_base_gpio_part2();
 	int err;
 
+	/* mmc0	 : eMMC (8-bit buswidth) */
+	err = exynos_pinmux_config(PERIPH_ID_SDMMC4, PINMUX_FLAG_8BIT_MODE);
+	if (err)
+		debug("SDMMC4 not configured\n");
+
+	/* eMMC_EN: SD_0_CDn: GPK0[2] Output High */
+	s5p_gpio_direction_output(&gpio->k0, 2, 0);
+	s5p_gpio_set_pull(&gpio->k0, 2, GPIO_PULL_NONE);
+
+	/* mmc2	 : SD card (4-bit buswidth) */
 	err = exynos_pinmux_config(PERIPH_ID_SDMMC2, PINMUX_FLAG_NONE);
 	if (err) {
 		debug("SDMMC2 not configured\n");
