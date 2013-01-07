@@ -193,6 +193,9 @@
 #define CONFIG_OF_LIBFDT
 /* Boot Argument Buffer Size */
 #define CONFIG_SYS_BARGSIZE		CONFIG_SYS_CBSIZE
+/* new uImage format support */
+#define CONFIG_FIT
+#define CONFIG_FIT_VERBOSE	/* enable fit_format_{error,warning}() */
 /* USB Options */
 #define CONFIG_CMD_USB
 #ifdef	CONFIG_CMD_USB
